@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>毛毛星球 🐾 寵物交流平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #FF6B9D;
+    --primary-light: #FFB3CF;
+    --primary-pale: #FFF0F6;
+    --secondary: #7C5CBF;
+    --secondary-light: #C4AEEA;
+    --accent: #FFD166;
+    --accent-green: #06D6A0;
+    --accent-blue: #4CC9F0;
+    --bg: #FFF8FB;
+    --surface: #FFFFFF;
+    --text: #2D1B3D;
+    --text-muted: #9B7FA8;
+    --border: #F0D6E8;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --shadow: 0 4px 24px rgba(255,107,157,0.10);
+    --shadow-hover: 0 8px 32px rgba(255,107,157,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  h1,h2,h3,h4,button,.logo-text,.nav-link {
+    font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* ─── NAVBAR ─── */
+  .navbar {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo-text {
+    font-size: 1.5rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo-text span { font-size: 1.3rem; }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .nav-link {
+    font-weight: 700; font-size: 0.9rem;
+    color: var(--text-muted); text-decoration: none;
+    padding: 8px 16px; border-radius: 100px;
+    cursor: pointer; transition: all .2s;
+    border: none; background: none;
+  }
+  .nav-link:hover { background: var(--primary-pale); color: var(--primary); }
+  .nav-link.active { background: var(--primary-pale); color: var(--primary); }
+  .nav-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--primary);
+    object-fit: cover; cursor: pointer;
+  }
+  .notif-dot {
+    width: 8px; height: 8px; background: var(--primary);
+    border-radius: 50%; position: absolute; top: 2px; right: 2px;
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 22px; border-radius: 100px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem;
+    border: none; cursor: pointer; transition: all .2s; text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), #FF8FAB);
+    color: white;
+    box-shadow: 0 4px 16px rgba(255,107,157,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,157,0.45); }
+  .btn-secondary {
+    background: var(--primary-pale);
+    color: var(--primary);
+    border: 2px solid var(--primary-light);
+  }
+  .btn-secondary:hover { background: var(--primary-light); color: white; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 2px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-sm { padding: 7px 16px; font-size: 0.82rem; }
+
+  /* ─── AUTH PAGE ─── */
+  #auth-page {
+    background: linear-gradient(160deg, #FFF0F6 0%, #F3EEFF 50%, #E8F9F5 100%);
+    align-items: center; justify-content: center; padding: 2rem;
+  }
+  .auth-card {
+    background: white; border-radius: 28px;
+    padding: 2.5rem; width: 100%; max-width: 420px;
+    box-shadow: 0 12px 48px rgba(124,92,191,0.12);
+    border: 1.5px solid var(--border);
+  }
+  .auth-title { font-size: 1.8rem; font-weight: 900; text-align: center; margin-bottom: 0.3rem; }
+  .auth-subtitle { color: var(--text-muted); text-align: center; font-size: 0.9rem; margin-bottom: 1.8rem; }
+  .auth-tabs { display: flex; background: var(--bg); border-radius: 100px; padding: 4px; margin-bottom: 1.6rem; }
+  .auth-tab {
+    flex: 1; text-align: center; padding: 8px;
+    border-radius: 100px; cursor: pointer; font-weight: 800; font-size: 0.9rem;
+    color: var(--text-muted); transition: all .2s;
+  }
+  .auth-tab.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(255,107,157,0.15); }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+    border: 2px solid var(--border); font-size: 0.95rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: border .2s; outline: none; background: var(--bg);
+  }
+  .form-input:focus { border-color: var(--primary); background: white; }
+  .avatar-upload {
+    border: 2px dashed var(--border); border-radius: var(--radius-sm);
+    padding: 1.2rem; text-align: center; cursor: pointer;
+    transition: all .2s; position: relative; background: var(--bg);
+  }
+  .avatar-upload:hover { border-color: var(--primary); background: var(--primary-pale); }
+  .avatar-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .avatar-preview { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto .5rem; display: block; border: 3px solid var(--primary-light); }
+  .upload-hint { font-size: 0.82rem; color: var(--text-muted); }
+  .upload-emoji { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+  .error-msg { color: #e74c3c; font-size: 0.82rem; margin-top: 4px; }
+  .success-msg { color: var(--accent-green); font-size: 0.82rem; margin-top: 4px; }
+
+  /* ─── HOME PAGE ─── */
+  #home-page { background: var(--bg); }
+  .home-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 260px;
+    gap: 1.5rem;
+    max-width: 1100px; margin: 0 auto;
+    padding: 1.5rem;
+    flex: 1;
+  }
+
+  /* Sidebar */
+  .sidebar-card {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 1.5rem; border: 1.5px solid var(--border);
+    position: sticky; top: 80px; height: fit-content;
+  }
+  .profile-sidebar { text-align: center; }
+  .profile-sidebar-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    object-fit: cover; border: 3px solid var(--primary-light);
+    margin: 0 auto 0.8rem; display: block;
+  }
+  .profile-sidebar-name { font-weight: 800; font-size: 1.1rem; }
+  .profile-sidebar-id { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1rem; }
+  .profile-stats { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; }
+  .stat-item { text-align: center; }
+  .stat-num { font-weight: 900; font-size: 1.2rem; color: var(--primary); }
+  .stat-label { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* Feed */
+  .feed-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .feed-title { font-size: 1.2rem; font-weight: 900; }
+  .post-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    margin-bottom: 1rem; overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .post-card:hover { box-shadow: var(--shadow-hover); }
+  .post-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1.2rem 0; }
+  .post-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light); flex-shrink: 0; }
+  .post-meta { flex: 1; }
+  .post-author { font-weight: 800; font-size: 0.95rem; }
+  .post-id { font-size: 0.78rem; color: var(--text-muted); }
+  .post-time { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
+  .post-topic {
+    font-weight: 800; font-size: 1.05rem;
+    margin: 0.6rem 1.2rem 0.4rem;
+  }
+  .post-content { padding: 0 1.2rem; font-size: 0.92rem; line-height: 1.7; color: #4a3560; }
+  .post-img { width: 100%; max-height: 360px; object-fit: cover; margin-top: 0.8rem; border-radius: 0; }
+  .post-actions {
+    display: flex; align-items: center; gap: 0; padding: 0.8rem 0.8rem 0;
+    border-top: 1.5px solid var(--border); margin-top: 0.8rem;
+  }
+  .action-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 100px;
+    border: none; background: none; cursor: pointer;
+    font-weight: 700; font-size: 0.85rem; color: var(--text-muted);
+    transition: all .2s; font-family: 'Nunito', sans-serif;
+  }
+  .action-btn:hover { background: var(--primary-pale); color: var(--primary); }
+  .action-btn.liked { color: var(--primary); }
+  .action-btn svg { width: 20px; height: 20px; }
+
+  /* Comments section */
+  .comments-section { padding: 0 1.2rem 1rem; display: none; }
+  .comments-section.open { display: block; }
+  .comment-divider { height: 1px; background: var(--border); margin: 0.8rem 0; }
+  .comment-item { display: flex; gap: 10px; margin-bottom: 0.8rem; }
+  .comment-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light); flex-shrink: 0; }
+  .comment-bubble { background: var(--bg); border-radius: var(--radius-sm); padding: 8px 12px; flex: 1; }
+  .comment-name { font-weight: 800; font-size: 0.82rem; color: var(--primary); }
+  .comment-text { font-size: 0.85rem; color: var(--text); margin-top: 2px; }
+  .comment-time { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+  .comment-input-row { display: flex; gap: 10px; align-items: center; margin-top: 0.8rem; }
+  .comment-input {
+    flex: 1; padding: 10px 14px; border-radius: 100px;
+    border: 2px solid var(--border); font-size: 0.88rem;
+    font-family: 'Noto Sans TC', sans-serif; outline: none; background: var(--bg);
+    transition: border .2s;
+  }
+  .comment-input:focus { border-color: var(--primary); background: white; }
+  .comment-send-btn {
+    background: var(--primary); color: white; border: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .comment-send-btn:hover { transform: scale(1.1); }
+
+  /* Right sidebar */
+  .trending-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--primary-pale); color: var(--primary);
+    padding: 5px 12px; border-radius: 100px;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer;
+    margin: 4px 3px; transition: all .2s; border: 1.5px solid var(--primary-light);
+  }
+  .trending-tag:hover { background: var(--primary); color: white; }
+
+  /* Search */
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: white; border: 2px solid var(--border);
+    border-radius: 100px; padding: 8px 16px; margin-bottom: 1rem;
+  }
+  .search-bar input { flex: 1; border: none; outline: none; font-size: 0.9rem; background: transparent; font-family: 'Noto Sans TC', sans-serif; }
+
+  /* ─── NEW POST PAGE ─── */
+  #post-page { background: var(--bg); }
+  .post-form-wrap {
+    max-width: 680px; margin: 0 auto; padding: 2rem 1.5rem; flex: 1;
+  }
+  .post-form-card {
+    background: white; border-radius: var(--radius);
+    padding: 2rem; border: 1.5px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .post-form-header { display: flex; align-items: center; gap: 14px; margin-bottom: 1.5rem; }
+  .post-form-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); }
+  .post-form-name { font-weight: 800; font-size: 1rem; }
+  .post-form-id { font-size: 0.8rem; color: var(--text-muted); }
+  .post-topic-input {
+    width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+    border: 2px solid var(--border); font-size: 1rem; font-weight: 700;
+    font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+    outline: none; background: var(--bg); transition: border .2s;
+    margin-bottom: 1rem;
+  }
+  .post-topic-input:focus { border-color: var(--primary); background: white; }
+  .post-content-input {
+    width: 100%; padding: 14px 16px; border-radius: var(--radius-sm);
+    border: 2px solid var(--border); font-size: 0.95rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    outline: none; background: var(--bg); transition: border .2s;
+    resize: none; height: 160px; line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .post-content-input:focus { border-color: var(--primary); background: white; }
+  .img-upload-area {
+    border: 2px dashed var(--border); border-radius: var(--radius-sm);
+    padding: 1.5rem; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--bg); position: relative;
+    margin-bottom: 1rem;
+  }
+  .img-upload-area:hover { border-color: var(--primary); background: var(--primary-pale); }
+  .img-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .img-preview-wrap { position: relative; display: inline-block; }
+  .img-preview { max-width: 100%; max-height: 240px; border-radius: var(--radius-sm); object-fit: cover; }
+  .remove-img {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,.6); color: white; border: none;
+    border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  }
+  .post-form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+  /* ─── MY PROFILE PAGE ─── */
+  #profile-page { background: var(--bg); }
+  .profile-wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; flex: 1; }
+  .profile-header-card {
+    background: white; border-radius: var(--radius);
+    padding: 2rem; border: 1.5px solid var(--border);
+    display: flex; align-items: center; gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .profile-big-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); }
+  .profile-info { flex: 1; }
+  .profile-name { font-size: 1.4rem; font-weight: 900; }
+  .profile-id { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem; }
+  .profile-counts { display: flex; gap: 1.5rem; }
+  .profile-count-item { text-align: center; }
+  .profile-count-num { font-size: 1.3rem; font-weight: 900; color: var(--primary); }
+  .profile-count-label { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(45,27,61,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; display: none; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn .2s; }
+  .modal {
+    background: white; border-radius: 24px; padding: 2rem;
+    max-width: 360px; width: 100%; text-align: center;
+    box-shadow: 0 16px 48px rgba(45,27,61,0.2);
+  }
+  .modal-emoji { font-size: 3rem; margin-bottom: 0.8rem; }
+  .modal-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.5rem; }
+  .modal-text { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .modal-actions { display: flex; gap: 10px; justify-content: center; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: #2D1B3D; color: white; padding: 12px 24px;
+    border-radius: 100px; font-weight: 700; font-size: 0.9rem;
+    transition: transform .3s; z-index: 9999; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+  .empty-state .emoji { font-size: 3rem; display: block; margin-bottom: 0.8rem; }
+  .empty-state p { font-size: 0.95rem; }
+
+  /* ─── FILTER TABS ─── */
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .filter-tab {
+    padding: 6px 16px; border-radius: 100px; border: 2px solid var(--border);
+    background: white; color: var(--text-muted); font-weight: 700;
+    font-size: 0.82rem; cursor: pointer; transition: all .2s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .filter-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+  .filter-tab:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+  /* ─── DECORATION ─── */
+  .paw-bg {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 6rem; opacity: 0.03; user-select: none;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .home-layout { grid-template-columns: 1fr; }
+    .sidebar-left, .sidebar-right { display: none; }
+  }
+  @media (max-width: 600px) {
+    .auth-card { padding: 1.5rem; }
+    .navbar { padding: 0 1rem; }
+    .post-form-wrap, .profile-wrap { padding: 1rem; }
+  }
+
+  /* ─── NOTIFICATION BADGE ─── */
+  .notif-wrap { position: relative; }
+  .notif-count {
+    position: absolute; top: -6px; right: -6px;
+    background: var(--primary); color: white;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 0.65rem; font-weight: 900; font-family: 'Nunito', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .page-header {
+    background: white; border-bottom: 1.5px solid var(--border);
+    padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem;
+  }
+  .page-title { font-size: 1.2rem; font-weight: 900; }
+  .back-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--border); background: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted); transition: all .2s;
+  }
+  .back-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  .delete-post-btn {
+    margin-left: auto;
+    background: none; border: none; color: #ccc; cursor: pointer;
+    font-size: 1.1rem; padding: 4px 8px; border-radius: 8px;
+    transition: all .2s;
+  }
+  .delete-post-btn:hover { color: #e74c3c; background: #ffeaea; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-emoji">🐾</div>
+    <div class="modal-title">還沒有帳號嗎？</div>
+    <div class="modal-text">加入毛毛星球，和大家分享你的毛孩日常！</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">再想想</button>
+      <button class="btn btn-primary btn-sm" onclick="closeModal(); showPage('auth-page')">登入 / 註冊</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ AUTH PAGE ═══════════════════ -->
+<div id="auth-page" class="page active">
+  <div style="position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;">
+    <span style="position:absolute;top:10%;left:5%;font-size:5rem;opacity:.05;transform:rotate(-15deg);">🐶</span>
+    <span style="position:absolute;top:20%;right:8%;font-size:4rem;opacity:.05;transform:rotate(10deg);">🐱</span>
+    <span style="position:absolute;bottom:15%;left:10%;font-size:4rem;opacity:.05;transform:rotate(5deg);">🐰</span>
+    <span style="position:absolute;bottom:20%;right:5%;font-size:5rem;opacity:.05;transform:rotate(-10deg);">🐾</span>
+  </div>
+  <div class="auth-card" style="position:relative;z-index:1;">
+    <div class="auth-title">🐾 毛毛星球</div>
+    <div class="auth-subtitle">寵物日常分享交流社群</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">登入</div>
+      <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">註冊</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form">
+      <div id="login-step-1">
+        <div class="form-group">
+          <label class="form-label">帳號 ID</label>
+          <input class="form-input" id="login-id" type="text" placeholder="輸入你的 ID">
+        </div>
+        <div class="form-group">
+          <label class="form-label">密碼</label>
+          <input class="form-input" id="login-pw" type="password" placeholder="輸入密碼">
+        </div>
+        <div id="login-error" class="error-msg"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="doLoginStep1()">下一步 🐾</button>
+      </div>
+
+      <div id="login-step-2" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">圖片雙重驗證 (Image 2FA)</label>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">為了確保您的帳號安全，請從下方選出：<strong id="image-2fa-target" style="color:var(--primary);font-size:1.1rem;"></strong></p>
+          <div id="image-2fa-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <!-- Images injected via js -->
+          </div>
+        </div>
+        <div id="login-2fa-error" class="error-msg"></div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:0.5rem;" onclick="cancelLogin2FA()">取消</button>
+      </div>
+
+      <p id="login-footer" style="text-align:center;margin-top:1rem;font-size:0.85rem;color:var(--text-muted);">還沒有帳號？<span style="color:var(--primary);cursor:pointer;font-weight:700;" onclick="switchAuthTab('register')">立即加入</span></p>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">帳號 ID（唯一識別碼）</label>
+        <input class="form-input" id="reg-id" type="text" placeholder="例如：pawlover123">
+      </div>
+      <div class="form-group">
+        <label class="form-label">顯示名稱</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="讓大家認識你的名字">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密碼</label>
+        <input class="form-input" id="reg-pw" type="password" placeholder="設定密碼（至少 6 位）">
+      </div>
+      <div class="form-group">
+        <label class="form-label">頭貼上傳（可選）</label>
+        <div class="avatar-upload" id="avatar-upload-area">
+          <input type="file" accept="image/*" onchange="previewAvatar(event)">
+          <img id="avatar-preview-img" style="display:none;" class="avatar-preview">
+          <span class="upload-emoji" id="upload-emoji">📷</span>
+          <p class="upload-hint" id="upload-hint">點擊上傳你的頭貼</p>
+        </div>
+      </div>
+      <div id="reg-error" class="error-msg"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="doRegister()">建立帳號 ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ HOME PAGE ═══════════════════ -->
+<div id="home-page" class="page">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo-text"><span>🐾</span> 毛毛星球</div>
+    <div class="nav-actions">
+      <button class="nav-link" id="nav-share" onclick="showPage('home-page');setFeedView('share')">分享區</button>
+      <button class="nav-link" id="nav-profile-link" onclick="showPage('profile-page')">我的主頁</button>
+      <div class="notif-wrap">
+        <img src="" class="nav-avatar" id="nav-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4='">
+        <span class="notif-count" id="notif-count" style="display:none;">0</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">登出</button>
+    </div>
+  </nav>
+
+  <div class="home-layout">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+      <div class="sidebar-card profile-sidebar">
+        <img src="" id="sidebar-avatar" class="profile-sidebar-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4='">
+        <div class="profile-sidebar-name" id="sidebar-name"></div>
+        <div class="profile-sidebar-id" id="sidebar-id"></div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-num" id="sidebar-post-count">0</div>
+            <div class="stat-label">貼文</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="sidebar-like-count">0</div>
+            <div class="stat-label">獲讚</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="showPage('post-page')">✏️ 新增貼文</button>
+      </div>
+    </aside>
+
+    <!-- Main Feed -->
+    <main>
+      <div class="feed-header">
+        <div class="feed-title" id="feed-title">🌟 分享區</div>
+      </div>
+      <div class="search-bar">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#9B7FA8" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-input" placeholder="搜尋貼文、作者…" oninput="filterPosts()">
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterTag('all',this)">全部 🐾</button>
+        <button class="filter-tab" onclick="filterTag('狗狗',this)">🐶 狗狗</button>
+        <button class="filter-tab" onclick="filterTag('貓咪',this)">🐱 貓咪</button>
+        <button class="filter-tab" onclick="filterTag('兔兔',this)">🐰 兔兔</button>
+        <button class="filter-tab" onclick="filterTag('其他',this)">🦜 其他</button>
+      </div>
+      <div id="post-feed"></div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right">
+      <div class="sidebar-card" style="margin-bottom:1rem;">
+        <div style="font-weight:800;font-size:1rem;margin-bottom:1rem;">🔥 熱門標籤</div>
+        <div>
+          <span class="trending-tag" onclick="filterTag('狗狗',null)">🐶 狗狗</span>
+          <span class="trending-tag" onclick="filterTag('貓咪',null)">🐱 貓咪</span>
+          <span class="trending-tag" onclick="filterTag('兔兔',null)">🐰 兔兔</span>
+          <span class="trending-tag" onclick="filterTag('其他',null)">🦜 其他</span>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div style="font-weight:800;font-size:1rem;margin-bottom:1rem;">💌 關於毛毛星球</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7;">分享你的毛孩日常，和同好交流！記錄每一個珍貴瞬間 🐾</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ═══════════════════ POST PAGE ═══════════════════ -->
+<div id="post-page" class="page">
+  <nav class="navbar">
+    <div class="logo-text"><span>🐾</span> 毛毛星球</div>
+    <div class="nav-actions">
+      <button class="nav-link" onclick="showPage('home-page')">分享區</button>
+      <button class="nav-link" onclick="showPage('profile-page')">我的主頁</button>
+      <img src="" class="nav-avatar" id="nav-avatar-post" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4='">
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">登出</button>
+    </div>
+  </nav>
+  <div class="post-form-wrap">
+    <div class="page-header" style="background:none;border:none;padding:0 0 1rem 0;">
+      <button class="back-btn" onclick="showPage('home-page')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <span class="page-title">✏️ 新增貼文</span>
+    </div>
+    <div class="post-form-card">
+      <div class="post-form-header">
+        <img src="" id="post-form-avatar" class="post-form-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4='">
+        <div>
+          <div class="post-form-name" id="post-form-name"></div>
+          <div class="post-form-id" id="post-form-id"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">發布主題</label>
+        <input class="post-topic-input" id="new-topic" placeholder="今天要分享什麼呢？✨" maxlength="60">
+      </div>
+      <div class="form-group">
+        <label class="form-label">發布內容</label>
+        <textarea class="post-content-input" id="new-content" placeholder="分享你的毛孩日常、趣事、或任何想說的話…🐾"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">上傳照片（選填）</label>
+        <div class="img-upload-area" id="img-upload-area">
+          <input type="file" accept="image/*" id="post-img-input" onchange="previewPostImg(event)">
+          <div id="img-upload-placeholder">
+            <div style="font-size:2rem;margin-bottom:8px;">🖼️</div>
+            <p style="font-size:0.88rem;color:var(--text-muted);">點擊上傳照片（選填）</p>
+          </div>
+          <div id="img-preview-wrap" style="display:none;">
+            <img id="post-img-preview" class="img-preview">
+            <button class="remove-img" onclick="removePostImg(event)">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">標籤分類</label>
+        <select class="form-input" id="post-tag">
+          <option value="狗狗">🐶 狗狗</option>
+          <option value="貓咪">🐱 貓咪</option>
+          <option value="兔兔">🐰 兔兔</option>
+          <option value="其他">🦜 其他</option>
+        </select>
+      </div>
+      <div id="post-error" class="error-msg"></div>
+      <div class="post-form-actions">
+        <button class="btn btn-ghost" onclick="showPage('home-page')">取消</button>
+        <button class="btn btn-primary" onclick="submitPost()">發布貼文 🚀</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PROFILE PAGE ═══════════════════ -->
+<div id="profile-page" class="page">
+  <nav class="navbar">
+    <div class="logo-text"><span>🐾</span> 毛毛星球</div>
+    <div class="nav-actions">
+      <button class="nav-link" onclick="showPage('home-page')">分享區</button>
+      <button class="nav-link active" onclick="showPage('profile-page')">我的主頁</button>
+      <img src="" class="nav-avatar" id="nav-avatar-profile" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4='">
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">登出</button>
+    </div>
+  </nav>
+  <div class="profile-wrap">
+    <div class="profile-header-card">
+      <img src="" id="profile-big-avatar" class="profile-big-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4='">
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name"></div>
+        <div class="profile-id" id="profile-id-display"></div>
+        <div class="profile-counts">
+          <div class="profile-count-item">
+            <div class="profile-count-num" id="profile-post-count">0</div>
+            <div class="profile-count-label">貼文</div>
+          </div>
+          <div class="profile-count-item">
+            <div class="profile-count-num" id="profile-like-count">0</div>
+            <div class="profile-count-label">獲讚</div>
+          </div>
+          <div class="profile-count-item">
+            <div class="profile-count-num" id="profile-comment-count">0</div>
+            <div class="profile-count-label">留言</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="profile-new-post-btn" onclick="showPage('post-page')">✏️ 新貼文</button>
+    </div>
+    <div style="font-weight:800;font-size:1.1rem;margin-bottom:1rem;" id="profile-feed-title">我的貼文</div>
+    <div id="my-post-feed"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA STORE ───
+let users = JSON.parse(localStorage.getItem('mw_users') || '[]');
+let posts = JSON.parse(localStorage.getItem('mw_posts') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('mw_current') || 'null');
+let regAvatarData = '';
+let postImgData = '';
+let currentFilter = 'all';
+let currentView = 'share';
+
+const DEFAULT_AVATAR = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iI0ZGQjNDRiIvPjxwYXRoIGQ9Ik0yMCAxOGMzIDAgNS0yIDUtNXMtMi01LTUtNS01IDItNSA1IDIgNSA1IDV6bTAgM2MtNiAwLTExIDMtMTEgN3YxaDIydi0xYzAtNC01LTctMTEtN3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4=";
+
+function save() {
+  localStorage.setItem('mw_users', JSON.stringify(users));
+  localStorage.setItem('mw_posts', JSON.stringify(posts));
+  localStorage.setItem('mw_current', JSON.stringify(currentUser));
+}
+
+// ─── PAGES ───
+function showPage(pageId, arg) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if (pageId === 'home-page') {
+    updateSidebar();
+    renderFeed();
+    currentView = 'share';
+  }
+  if (pageId === 'post-page') fillPostForm();
+  if (pageId === 'profile-page') renderProfile(arg);
+}
+
+// ─── AUTH ───
+function switchAuthTab(tab) {
+  document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  if (tab === 'login' && typeof cancelLogin2FA === 'function') {
+    cancelLogin2FA();
+  }
+}
+
+function previewAvatar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    regAvatarData = ev.target.result;
+    const img = document.getElementById('avatar-preview-img');
+    img.src = regAvatarData;
+    img.style.display = 'block';
+    document.getElementById('upload-emoji').style.display = 'none';
+    document.getElementById('upload-hint').textContent = '已選擇頭貼 ✓';
+  };
+  reader.readAsDataURL(file);
+}
+
+function doRegister() {
+  const id = document.getElementById('reg-id').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  const err = document.getElementById('reg-error');
+  err.textContent = '';
+  if (!id || !name || !pw) { err.textContent = '請填寫所有必填欄位'; return; }
+  if (pw.length < 6) { err.textContent = '密碼至少需要 6 個字元'; return; }
+  if (users.find(u => u.id === id)) { err.textContent = '此 ID 已被使用，請換一個'; return; }
+  const newUser = { id, name, pw, avatar: regAvatarData || DEFAULT_AVATAR };
+  users.push(newUser);
+  save();
+  showToast('✅ 註冊成功！歡迎來到毛毛星球～');
+  switchAuthTab('login');
+  document.getElementById('login-id').value = id;
+}
+
+let pendingLoginUser = null;
+const image2FAAnimals = [
+  { name: '狗狗', src: './images/puppy.jpg' },
+  { name: '水獺', src: './images/otter.jpg' },
+  { name: '貓咪', src: './images/kitten.jpg' },
+  { name: '兔兔', src: './images/bunny.jpg' },
+  { name: '倉鼠', src: './images/hamster.jpg' }
+];
+let targetImage2FA = null;
+
+function setupImage2FA() {
+  const shuffled = [...image2FAAnimals].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 4);
+  targetImage2FA = selected[Math.floor(Math.random() * 4)];
+  
+  document.getElementById('image-2fa-target').textContent = `${targetImage2FA.name}`;
+  
+  const grid = document.getElementById('image-2fa-grid');
+  grid.innerHTML = selected.map(a => `
+    <div onclick="checkImage2FA('${a.name}')" 
+         style="background:var(--bg);border:2px solid var(--border);border-radius:12px;
+                padding:10px;text-align:center;cursor:pointer;
+                transition:all .2s;" 
+         onmouseover="this.style.borderColor='var(--primary)';this.style.background='var(--primary-pale)'" 
+         onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg)'">
+      <img src="${a.src}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;" alt="${a.name}">
+    </div>
+  `).join('');
+}
+
+function doLoginStep1() {
+  const id = document.getElementById('login-id').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  const err = document.getElementById('login-error');
+  err.textContent = '';
+  const user = users.find(u => u.id === id && u.pw === pw);
+  if (!user) { err.textContent = 'ID 或密碼錯誤，請再試試看'; return; }
+  
+  pendingLoginUser = user;
+  setupImage2FA();
+  
+  document.getElementById('login-step-1').style.display = 'none';
+  document.getElementById('login-footer').style.display = 'none';
+  document.getElementById('login-step-2').style.display = 'block';
+  document.getElementById('login-2fa-error').textContent = '';
+}
+
+function checkImage2FA(selectedName) {
+  const err = document.getElementById('login-2fa-error');
+  err.textContent = '';
+  
+  if (selectedName !== targetImage2FA.name) {
+    err.textContent = '驗證失敗，請再試一次！';
+    setupImage2FA();
+    return;
+  }
+  
+  currentUser = pendingLoginUser;
+  pendingLoginUser = null;
+  save();
+  showPage('home-page');
+  showToast(`🐾 歡迎回來，${currentUser.name}！`);
+  cancelLogin2FA();
+}
+
+function cancelLogin2FA() {
+  pendingLoginUser = null;
+  document.getElementById('login-step-1').style.display = 'block';
+  document.getElementById('login-footer').style.display = 'block';
+  document.getElementById('login-step-2').style.display = 'none';
+}
+
+function doLogout() {
+  currentUser = null;
+  save();
+  showPage('auth-page');
+}
+
+// ─── FEED ───
+function setFeedView(view) {
+  currentView = view;
+  renderFeed();
+}
+
+function renderFeed(filter) {
+  const feed = document.getElementById('post-feed');
+  let filtered = [...posts].reverse();
+
+  const searchVal = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
+  if (currentFilter !== 'all') filtered = filtered.filter(p => p.tag === currentFilter);
+  if (searchVal) filtered = filtered.filter(p =>
+    p.topic.toLowerCase().includes(searchVal) ||
+    p.content.toLowerCase().includes(searchVal) ||
+    p.authorName.toLowerCase().includes(searchVal) ||
+    p.authorId.toLowerCase().includes(searchVal)
+  );
+
+  document.getElementById('feed-title').textContent = '🌟 分享區';
+  if (!filtered.length) {
+    feed.innerHTML = `<div class="empty-state"><span class="emoji">🐾</span><p>還沒有貼文，快來分享你的毛孩吧！</p></div>`;
+    return;
+  }
+  feed.innerHTML = filtered.map(p => renderPostCard(p, false)).join('');
+}
+
+function filterTag(tag, el) {
+  currentFilter = tag;
+  if (el) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  renderFeed();
+}
+
+function filterPosts() { renderFeed(); }
+
+function renderPostCard(p, isProfile) {
+  const liked = currentUser && p.likes && p.likes.includes(currentUser.id);
+  const likeCount = p.likes ? p.likes.length : 0;
+  const commentCount = p.comments ? p.comments.length : 0;
+  const isOwner = currentUser && currentUser.id === p.authorId;
+  const timeStr = formatTime(p.ts);
+  return `<div class="post-card" id="post-${p.id}">
+    <div class="post-header">
+      <img class="post-avatar" src="${p.authorAvatar || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'" style="cursor:pointer;" onclick="showPage('profile-page', '${p.authorId}')">
+      <div class="post-meta">
+        <div class="post-author" style="cursor:pointer;" onclick="showPage('profile-page', '${p.authorId}')">${esc(p.authorName)}</div>
+        <div class="post-id">@${esc(p.authorId)} · ${tagEmoji(p.tag)} ${esc(p.tag)}</div>
+      </div>
+      <span class="post-time">${timeStr}</span>
+      ${isOwner ? `<button class="delete-post-btn" title="刪除貼文" onclick="deletePost('${p.id}')">🗑️</button>` : ''}
+    </div>
+    <div class="post-topic">${esc(p.topic)}</div>
+    <div class="post-content">${esc(p.content)}</div>
+    ${p.img ? `<img class="post-img" src="${p.img}" alt="貼文圖片">` : ''}
+    <div class="post-actions">
+      <button class="action-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}')">
+        <svg fill="${liked ? '#FF6B9D' : 'none'}" viewBox="0 0 24 24" stroke="${liked ? '#FF6B9D' : 'currentColor'}" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+        ${likeCount}
+      </button>
+      <button class="action-btn" onclick="toggleComments('${p.id}')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        ${commentCount}
+      </button>
+    </div>
+    <div class="comments-section" id="comments-${p.id}">
+      <div class="comment-divider"></div>
+      ${renderComments(p)}
+      ${currentUser ? `
+        <div class="comment-input-row">
+          <img class="comment-avatar" src="${currentUser.avatar || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <input class="comment-input" id="comment-input-${p.id}" placeholder="說點什麼…" onkeydown="if(event.key==='Enter')sendComment('${p.id}')">
+          <button class="comment-send-btn" onclick="sendComment('${p.id}')">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+            </svg>
+          </button>
+        </div>` : `<p style="font-size:0.85rem;color:var(--text-muted);text-align:center;padding:.5rem 0;"><span style="cursor:pointer;color:var(--primary);font-weight:700;" onclick="showLoginPrompt()">登入</span> 後才能留言哦 🐾</p>`}
+    </div>
+  </div>`;
+}
+
+function renderComments(p) {
+  if (!p.comments || !p.comments.length) return '<p style="font-size:0.85rem;color:var(--text-muted);text-align:center;padding:.5rem 0;">還沒有留言，快來第一個留言！</p>';
+  return p.comments.map(c => `
+    <div class="comment-item">
+      <img class="comment-avatar" src="${c.avatar || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+      <div class="comment-bubble">
+        <div class="comment-name">${esc(c.name)} <span style="color:var(--text-muted);font-weight:400;font-size:0.75rem;">@${esc(c.id)}</span></div>
+        <div class="comment-text">${esc(c.text)}</div>
+        <div class="comment-time">${formatTime(c.ts)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleComments(postId) {
+  const section = document.getElementById(`comments-${postId}`);
+  if (!section) return;
+  if (!section.classList.contains('open')) {
+    if (!currentUser) { showModal(); return; }
+    section.classList.add('open');
+  } else {
+    section.classList.remove('open');
+  }
+}
+
+function toggleLike(postId) {
+  if (!currentUser) { showModal(); return; }
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  if (!post.likes) post.likes = [];
+  const idx = post.likes.indexOf(currentUser.id);
+  if (idx === -1) {
+    post.likes.push(currentUser.id);
+    // notification for post owner
+    if (post.authorId !== currentUser.id) {
+      addNotif(post.authorId);
+    }
+  } else {
+    post.likes.splice(idx, 1);
+  }
+  save();
+  // re-render just the card
+  const cardEl = document.getElementById(`post-${postId}`);
+  if (cardEl) cardEl.outerHTML = renderPostCard(post, false);
+  updateSidebar();
+}
+
+function sendComment(postId) {
+  if (!currentUser) { showModal(); return; }
+  const input = document.getElementById(`comment-input-${postId}`);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  if (!post.comments) post.comments = [];
+  post.comments.push({
+    id: currentUser.id, name: currentUser.name,
+    avatar: currentUser.avatar, text, ts: Date.now()
+  });
+  if (post.authorId !== currentUser.id) addNotif(post.authorId);
+  save();
+  const cardEl = document.getElementById(`post-${postId}`);
+  if (cardEl) {
+    cardEl.outerHTML = renderPostCard(post, false);
+    // re-open comments
+    const section = document.getElementById(`comments-${postId}`);
+    if (section) section.classList.add('open');
+  }
+  updateSidebar();
+}
+
+function deletePost(postId) {
+  if (!confirm('確定要刪除這篇貼文嗎？')) return;
+  posts = posts.filter(p => p.id !== postId);
+  save();
+  renderFeed();
+  renderProfile();
+  showToast('🗑️ 貼文已刪除');
+}
+
+// ─── POST FORM ───
+function fillPostForm() {
+  if (!currentUser) { showPage('auth-page'); return; }
+  ['post-form-avatar','nav-avatar-post'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.src = currentUser.avatar || DEFAULT_AVATAR;
+  });
+  document.getElementById('post-form-name').textContent = currentUser.name;
+  document.getElementById('post-form-id').textContent = '@' + currentUser.id;
+  document.getElementById('new-topic').value = '';
+  document.getElementById('new-content').value = '';
+  document.getElementById('post-img-preview').src = '';
+  document.getElementById('img-upload-placeholder').style.display = '';
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('post-error').textContent = '';
+  postImgData = '';
+}
+
+function previewPostImg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    postImgData = ev.target.result;
+    document.getElementById('post-img-preview').src = postImgData;
+    document.getElementById('img-upload-placeholder').style.display = 'none';
+    document.getElementById('img-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePostImg(e) {
+  e.stopPropagation();
+  postImgData = '';
+  document.getElementById('post-img-preview').src = '';
+  document.getElementById('img-upload-placeholder').style.display = '';
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('post-img-input').value = '';
+}
+
+function submitPost() {
+  const topic = document.getElementById('new-topic').value.trim();
+  const content = document.getElementById('new-content').value.trim();
+  const tag = document.getElementById('post-tag').value;
+  const err = document.getElementById('post-error');
+  if (!topic) { err.textContent = '請輸入發布主題'; return; }
+  if (!content) { err.textContent = '請輸入發布內容'; return; }
+  err.textContent = '';
+  const post = {
+    id: 'p' + Date.now(),
+    authorId: currentUser.id,
+    authorName: currentUser.name,
+    authorAvatar: currentUser.avatar,
+    topic, content, tag,
+    img: postImgData || '',
+    likes: [], comments: [],
+    ts: Date.now()
+  };
+  posts.push(post);
+  save();
+  showToast('🚀 貼文發布成功！');
+  showPage('home-page');
+}
+
+// ─── PROFILE ───
+function renderProfile(targetId) {
+  const uid = targetId || (currentUser ? currentUser.id : null);
+  if (!uid) return;
+  
+  const isMe = currentUser && currentUser.id === uid;
+  
+  let user = users.find(u => u.id === uid);
+  if (!user) {
+    const postByThem = posts.find(p => p.authorId === uid);
+    if (postByThem) {
+      user = { id: uid, name: postByThem.authorName, avatar: postByThem.authorAvatar };
+    } else {
+      user = { id: uid, name: '未知用戶', avatar: DEFAULT_AVATAR };
+    }
+  }
+
+  ['profile-big-avatar','nav-avatar-profile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (id === 'nav-avatar-profile' && currentUser) {
+      if (el) el.src = currentUser.avatar || DEFAULT_AVATAR;
+    } else if (id === 'profile-big-avatar') {
+      if (el) el.src = user.avatar || DEFAULT_AVATAR;
+    }
+  });
+
+  document.getElementById('profile-name').textContent = user.name;
+  document.getElementById('profile-id-display').textContent = '@' + user.id;
+  
+  const userPosts = posts.filter(p => p.authorId === uid);
+  const totalLikes = userPosts.reduce((s, p) => s + (p.likes ? p.likes.length : 0), 0);
+  const totalComments = userPosts.reduce((s, p) => s + (p.comments ? p.comments.length : 0), 0);
+  
+  document.getElementById('profile-post-count').textContent = userPosts.length;
+  document.getElementById('profile-like-count').textContent = totalLikes;
+  document.getElementById('profile-comment-count').textContent = totalComments;
+  
+  const newPostBtn = document.getElementById('profile-new-post-btn');
+  if (newPostBtn) newPostBtn.style.display = isMe ? 'block' : 'none';
+  
+  const titleEl = document.getElementById('profile-feed-title');
+  if (titleEl) titleEl.textContent = isMe ? '我的貼文' : `${user.name} 的貼文`;
+  
+  const feed = document.getElementById('my-post-feed');
+  if (!userPosts.length) {
+    feed.innerHTML = `<div class="empty-state"><span class="emoji">🐾</span><p>還沒有貼文哦！</p></div>`;
+    return;
+  }
+  feed.innerHTML = [...userPosts].reverse().map(p => renderPostCard(p, true)).join('');
+}
+
+// ─── SIDEBAR ───
+function updateSidebar() {
+  if (!currentUser) return;
+  ['nav-avatar','sidebar-avatar','nav-avatar-post','nav-avatar-profile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.src = currentUser.avatar || DEFAULT_AVATAR;
+  });
+  const el = document.getElementById('sidebar-name');
+  if (el) el.textContent = currentUser.name;
+  const idEl = document.getElementById('sidebar-id');
+  if (idEl) idEl.textContent = '@' + currentUser.id;
+  const myPosts = posts.filter(p => p.authorId === currentUser.id);
+  const totalLikes = myPosts.reduce((s, p) => s + (p.likes ? p.likes.length : 0), 0);
+  const pcEl = document.getElementById('sidebar-post-count');
+  if (pcEl) pcEl.textContent = myPosts.length;
+  const lcEl = document.getElementById('sidebar-like-count');
+  if (lcEl) lcEl.textContent = totalLikes;
+}
+
+// ─── NOTIFICATIONS ───
+function addNotif(userId) {
+  if (currentUser && currentUser.id === userId) {
+    const badge = document.getElementById('notif-count');
+    if (badge) {
+      badge.style.display = 'flex';
+      badge.textContent = parseInt(badge.textContent || '0') + 1;
+    }
+  }
+}
+
+// ─── MODAL ───
+function showModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function showLoginPrompt() { showModal(); }
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ─── UTILS ───
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatTime(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return '剛剛';
+  if (diff < 3600000) return Math.floor(diff/60000) + ' 分鐘前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' 小時前';
+  return Math.floor(diff/86400000) + ' 天前';
+}
+function tagEmoji(tag) {
+  const map = {'狗狗':'🐶','貓咪':'🐱','兔兔':'🐰','其他':'🦜'};
+  return map[tag] || '🐾';
+}
+
+// ─── INIT ───
+if (currentUser) {
+  showPage('home-page');
+} else {
+  showPage('auth-page');
+}
+
+// Seed demo posts if empty
+if (!posts.length) {
+  const demoAvatar = DEFAULT_AVATAR;
+  posts = [
+    {
+      id: 'demo1', authorId: 'pawlover', authorName: '毛球媽媽', authorAvatar: demoAvatar,
+      topic: '柴柴今天超可愛！', content: '我家柴柴今天突然學會翻滾，一直在地板上打滾，超級可愛！還會用那雙圓眼睛看著我，根本萌死人不償命 🥰',
+      tag: '狗狗', img: '', likes: [], comments: [{id:'kitty',name:'貓派代表',avatar:demoAvatar,text:'哇太可愛了吧！快出影片！',ts:Date.now()-3600000}],
+      ts: Date.now()-7200000
+    },
+    {
+      id: 'demo2', authorId: 'kittycat', authorName: '貓派代表', authorAvatar: demoAvatar,
+      topic: '喵星人的日常：睡覺、吃飯、再睡覺', content: '我家橘貓每天 20 小時在睡覺，另外 4 小時在討食。但就是這麼可愛，讓人根本無法生氣！你家的貓咪也這樣嗎？',
+      tag: '貓咪', img: '', likes: ['pawlover'], comments: [], ts: Date.now()-3600000
+    }
+  ];
+  save();
+}
+</script>
+</body>
+</html>
